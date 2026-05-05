@@ -108,7 +108,6 @@ button {
   <button onclick="buscar()">Buscar</button>
   <button class="btn-warning" onclick="venceHoy()">Vence hoy</button>
   <button class="btn-danger" onclick="vencidos()">Vencidos</button>
-  <button onclick="verTodos()">Ver todos</button>
   <button class="btn-reset" onclick="limpiarFiltros()">🧹 Limpiar filtros</button>
   <button class="btn-add" onclick="abrirModal()">➕ Agregar objeto</button>
 </div>
@@ -235,10 +234,6 @@ function buscar() {
   mostrar(filtrados);
 }
 
-function verTodos() {
-  mostrar(data);
-}
-
 function venceHoy() {
   const hoy = new Date().toISOString().split("T")[0];
   mostrar(data.filter(i => i.FechaVencimientoISO === hoy));
@@ -262,6 +257,14 @@ function abrirModal() {
 function cerrarModal() {
   document.getElementById("modal").style.display = "none";
 }
+
+/* ENTER para buscar */
+document.getElementById("search").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") buscar();
+});
+
+/* Fecha auto-busca */
+document.getElementById("date").addEventListener("change", buscar);
 
 cargarDatos();
 </script>
