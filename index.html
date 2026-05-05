@@ -108,7 +108,7 @@ button {
   <button onclick="buscar()">Buscar</button>
   <button class="btn-warning" onclick="venceHoy()">Vence hoy</button>
   <button class="btn-danger" onclick="vencidos()">Vencidos</button>
-  <button onclick="cargarDatos()">Ver todos</button>
+  <!-- ❌ BOTÓN ELIMINADO -->
   <button class="btn-reset" onclick="limpiarFiltros()">🧹 Limpiar filtros</button>
   <button class="btn-add" onclick="abrirModal()">➕ Agregar objeto</button>
 </div>
@@ -177,7 +177,7 @@ async function cargarDatos() {
     };
   });
 
-  mostrar([]); // 👈 NO mostrar nada al inicio
+  mostrar([]);
 }
 
 function mostrar(items) {
@@ -239,7 +239,7 @@ function vencidos() {
 function limpiarFiltros() {
   document.getElementById("search").value = "";
   document.getElementById("date").value = "";
-  mostrar([]); // 👈 vuelve a pantalla bonita
+  mostrar([]);
 }
 
 function abrirModal() {
