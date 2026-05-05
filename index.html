@@ -7,7 +7,7 @@
 <style>
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #f7b24a;
+  background: #f7f5f2;
   margin: 0;
   padding: 20px;
   color: #333;
@@ -34,8 +34,8 @@ input {
 }
 
 button {
-  padding: 20px 20px;
-  margin: 10px;
+  padding: 10px 15px;
+  margin: 5px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
@@ -50,16 +50,16 @@ button {
 
 /* PANTALLA INICIAL */
 .inicio {
-  height: 90vh;
+  height: 60vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #0f0f0f;
+  color: #444;
   text-align: center;
   background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center;
   background-size: cover;
-  border-radius: 40px;
+  border-radius: 20px;
 }
 
 .inicio h2 {
@@ -99,7 +99,7 @@ button {
 
 <body>
 
-<h1>Lost & Found La Zebra</h1>
+<h1>Lost & Found</h1>
 
 <div class="controls">
   <input type="text" id="search" placeholder="Buscar (ej: termo negro)">
@@ -108,7 +108,7 @@ button {
   <button onclick="buscar()">Buscar</button>
   <button class="btn-warning" onclick="venceHoy()">Vence hoy</button>
   <button class="btn-danger" onclick="vencidos()">Vencidos</button>
-  <button onclick="cargarDatos()">Ver todos</button>
+  <button onclick="verTodos()">Ver todos</button>
   <button class="btn-reset" onclick="limpiarFiltros()">🧹 Limpiar filtros</button>
   <button class="btn-add" onclick="abrirModal()">➕ Agregar objeto</button>
 </div>
@@ -177,7 +177,7 @@ async function cargarDatos() {
     };
   });
 
-  mostrar([]); // 👈 NO mostrar nada al inicio
+  mostrar([]);
 }
 
 function mostrar(items) {
@@ -211,19 +211,32 @@ function mostrar(items) {
 }
 
 function buscar() {
-  const texto = document.getElementById("search").value.toLowerCase();
+  const texto = document.getElementById("search").value.trim().toLowerCase();
   const fecha = document.getElementById("date").value;
 
-  let filtrados = data.filter(item =>
-    (item.Descripcion || "").toLowerCase().includes(texto) ||
-    (item.Tipo || "").toLowerCase().includes(texto)
-  );
+  if (!texto && !fecha) {
+    mostrar([]);
+    return;
+  }
+
+  let filtrados = data;
+
+  if (texto) {
+    filtrados = filtrados.filter(item =>
+      (item.Descripcion || "").toLowerCase().includes(texto) ||
+      (item.Tipo || "").toLowerCase().includes(texto)
+    );
+  }
 
   if (fecha) {
     filtrados = filtrados.filter(item => item.FechaRegistroISO === fecha);
   }
 
   mostrar(filtrados);
+}
+
+function verTodos() {
+  mostrar(data);
 }
 
 function venceHoy() {
@@ -239,7 +252,7 @@ function vencidos() {
 function limpiarFiltros() {
   document.getElementById("search").value = "";
   document.getElementById("date").value = "";
-  mostrar([]); // 👈 vuelve a pantalla bonita
+  mostrar([]);
 }
 
 function abrirModal() {
