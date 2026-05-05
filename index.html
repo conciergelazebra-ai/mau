@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Lost & Found - La Zebra</title>
+
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f7b24a;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.controls {
+  text-align: center;
+  margin-bottom: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+input {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 20px 20px;
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #111;
+  color: white;
+}
+
+.btn-warning { background: #f39c12; }
+.btn-danger { background: #e74c3c; }
+.btn-reset { background: #7f8c8d; }
+.btn-add { background: #c8a97e; }
+
+/* PANTALLA INICIAL */
+.inicio {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #0f0f0f;
+  text-align: center;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center;
+  background-size: cover;
+  border-radius: 40px;
+}
+
+.inicio h2 {
+  font-size: 32px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin: 10px auto;
+  border-radius: 15px;
+  max-width: 600px;
+}
+
+.vencido { border-left: 6px solid red; }
+.activo { border-left: 6px solid green; }
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 20px;
+  border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Lost & Found La Zebra</h1>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar (ej: termo negro)">
+  <input type="date" id="date"><br>
+
+  <button onclick="buscar()">Buscar</button>
+  <button class="btn-warning" onclick="venceHoy()">Vence hoy</button>
+  <button class="btn-danger" onclick="vencidos()">Vencidos</button>
+  <button onclick="cargarDatos()">Ver todos</button>
+  <button class="btn-reset" onclick="limpiarFiltros()">🧹 Limpiar filtros</button>
+  <button class="btn-add" onclick="abrirModal()">➕ Agregar objeto</button>
+</div>
+
+<!-- PANTALLA INICIAL -->
+<div id="inicio" class="inicio">
+  <h2>Lost & Found</h2>
+  <p>Busca un objeto o filtra por fecha</p>
+</div>
+
+<div id="resultados"></div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span onclick="cerrarModal()" style="cursor:pointer;">✖</span>
+    <h2>Agregar objeto</h2>
+    <iframe 
+      src="https://docs.google.com/forms/d/e/1FAIpQLSe2L5zVSiviONFlpn-oTlx6btNImY0RdmpmnNIKPzjwgz8_4w/viewform?embedded=true"
+      width="100%" height="500">
+    </iframe>
+  </div>
+</div>
+
+<script>
+const sheetURL = "https://opensheet.elk.sh/1svVkZIovuBEb_OjIj0fr0x1X2ZDyMJYUfJyD2bsiAOI/Respuestas de formulario 1";
+
+let data = [];
+
+function parseFecha(fechaStr) {
+  if (!fechaStr) return null;
+
+  fechaStr = fechaStr.split(" ")[0];
+
+  if (fechaStr.includes("/")) {
+    const partes = fechaStr.split("/");
+    const fecha = new Date(partes[2], partes[1]-1, partes[0]);
+    if (!isNaN(fecha)) return fecha;
+  }
+
+  const fecha = new Date(fechaStr);
+  return isNaN(fecha) ? null : fecha;
+}
+
+function formatoISO(fecha) {
+  return fecha ? fecha.toISOString().split("T")[0] : null;
+}
+
+function calcularVencimiento(fecha) {
+  if (!fecha) return null;
+  const f = new Date(fecha);
+  f.setDate(f.getDate() + 15);
+  return f;
+}
+
+async function cargarDatos() {
+  const res = await fetch(sheetURL);
+  data = await res.json();
+
+  data = data.map(item => {
+    const fecha = parseFecha(item.FechaRegistro || item["Fecha de registro"] || item["Marca temporal"]);
+    return {
+      ...item,
+      FechaRegistroISO: formatoISO(fecha),
+      FechaVencimientoISO: formatoISO(calcularVencimiento(fecha))
+    };
+  });
+
+  mostrar([]); // 👈 NO mostrar nada al inicio
+}
+
+function mostrar(items) {
+  const cont = document.getElementById("resultados");
+  const inicio = document.getElementById("inicio");
+
+  cont.innerHTML = "";
+
+  if (!items || items.length === 0) {
+    inicio.style.display = "flex";
+    return;
+  }
+
+  inicio.style.display = "none";
+
+  const hoy = new Date().toISOString().split("T")[0];
+
+  items.forEach(item => {
+    const vencido = item.FechaVencimientoISO && item.FechaVencimientoISO < hoy;
+
+    cont.innerHTML += `
+      <div class="card ${vencido ? 'vencido' : 'activo'}">
+        <b>${item.Descripcion || "-"}</b><br>
+        Tipo: ${item.Tipo || "-"}<br>
+        Fecha: ${item.FechaRegistroISO || "-"}<br>
+        Encontrado por: ${item.EncontradoPor || "-"}<br>
+        Vence: ${item.FechaVencimientoISO || "-"}
+      </div>
+    `;
+  });
+}
+
+function buscar() {
+  const texto = document.getElementById("search").value.toLowerCase();
+  const fecha = document.getElementById("date").value;
+
+  let filtrados = data.filter(item =>
+    (item.Descripcion || "").toLowerCase().includes(texto) ||
+    (item.Tipo || "").toLowerCase().includes(texto)
+  );
+
+  if (fecha) {
+    filtrados = filtrados.filter(item => item.FechaRegistroISO === fecha);
+  }
+
+  mostrar(filtrados);
+}
+
+function venceHoy() {
+  const hoy = new Date().toISOString().split("T")[0];
+  mostrar(data.filter(i => i.FechaVencimientoISO === hoy));
+}
+
+function vencidos() {
+  const hoy = new Date().toISOString().split("T")[0];
+  mostrar(data.filter(i => i.FechaVencimientoISO && i.FechaVencimientoISO < hoy));
+}
+
+function limpiarFiltros() {
+  document.getElementById("search").value = "";
+  document.getElementById("date").value = "";
+  mostrar([]); // 👈 vuelve a pantalla bonita
+}
+
+function abrirModal() {
+  document.getElementById("modal").style.display = "block";
+}
+
+function cerrarModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+cargarDatos();
+</script>
+
+</body>
+</html>
