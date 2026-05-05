@@ -18,45 +18,57 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* PANEL DERECHO */
-.controls {
+/* BOTÓN MENU */
+.menu-btn {
   position: fixed;
-  right: 20px;
+  right: 50px;
   top: 20px;
-  width: 220px;
+  background: #111;
+  color: white;
+  border: none;
+  padding: 25px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  z-index: 1001;
+  font-size: 18px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -1000px;
+  width: 600px;
+  height: 100%;
+  background: white;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
   gap: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transition: right 0.35s ease;
+  z-index: 1000;
 }
 
-/* CONTENIDO IZQUIERDA */
-.contenido {
-  margin-right: 260px;
+.sidebar.active {
+  right: 0;
 }
 
-/* INPUTS */
-input {
-  padding: 50px;
+.sidebar input {
+  padding: 22px;
   border-radius: 10px;
   border: 1px solid #ddd;
-  width: 100%;
-  font-size: 30px;
+  font-size: 28px
 }
 
-/* BOTONES */
-button {
-  padding: 50px;
-  border-radius: 12px;
+.sidebar button {
+  padding: 38px;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
   background: #111;
   color: white;
-  font-size: 40px;
-  width: 100%;
+  font-size: 38px;
 }
 
 .btn-warning { background: #f39c12; }
@@ -64,24 +76,25 @@ button {
 .btn-reset { background: #7f8c8d; }
 .btn-add { background: #c8a97e; }
 
-/* PANTALLA INICIAL */
+/* CONTENIDO */
+.contenido {
+  max-width: 900px;
+  margin: auto;
+}
+
+/* INICIO */
 .inicio {
-  height: 90vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #0f0f0f;
   text-align: center;
-  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center;
-  background-size: cover;
-  border-radius: 40px;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') center/cover;
+  border-radius: 30px;
 }
 
-.inicio h2 {
-  font-size: 52px;
-}
-
+/* CARDS */
 .card {
   background: white;
   padding: 18px;
@@ -105,19 +118,17 @@ button {
 .modal-content {
   background: white;
   width: 90%;
-  max-width: 1500px;
+  max-width: 1200px;
   height: 90vh;
   margin: 20px auto;
   padding: 20px;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .form-container {
   flex: 1;
-  overflow: auto;
 }
 
 .form-container iframe {
@@ -132,25 +143,27 @@ button {
 
 <h1>Lost & Found La Zebra</h1>
 
-<!-- PANEL DERECHO -->
-<div class="controls">
-  <input type="text" id="search" placeholder="Buscar (ej: termo negro)">
+<!-- BOTÓN MENU -->
+<button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <input type="text" id="search" placeholder="Buscar objeto">
   <input type="date" id="date">
 
-  <button onclick="buscar()">🔍 Buscar</button>
-  <button class="btn-warning" onclick="venceHoy()">⏰ Vence hoy</button>
-  <button class="btn-danger" onclick="vencidos()">⚠️ Vencidos</button>
-  <button class="btn-reset" onclick="limpiarFiltros()">🧹 Limpiar</button>
-  <button class="btn-add" onclick="abrirModal()">➕ Agregar</button>
+  <button onclick="buscar(); closeMenu()">🔍 Buscar</button>
+  <button class="btn-warning" onclick="venceHoy(); closeMenu()">⏰ Vence hoy</button>
+  <button class="btn-danger" onclick="vencidos(); closeMenu()">⚠️ Vencidos</button>
+  <button class="btn-reset" onclick="limpiarFiltros(); closeMenu()">🧹 Limpiar</button>
+  <button class="btn-add" onclick="abrirModal(); closeMenu()">➕ Agregar</button>
 </div>
 
 <!-- CONTENIDO -->
 <div class="contenido">
 
-  <!-- PANTALLA INICIAL -->
   <div id="inicio" class="inicio">
     <h2>Lost & Found</h2>
-    <p>Busca un objeto o filtra por fecha</p>
+    <p>Presiona el menú para buscar objetos</p>
   </div>
 
   <div id="resultados"></div>
@@ -164,11 +177,8 @@ button {
     <h2>Agregar objeto</h2>
 
     <div class="form-container">
-      <iframe 
-        src="https://docs.google.com/forms/d/e/1FAIpQLSe2L5zVSiviONFlpn-oTlx6btNImY0RdmpmnNIKPzjwgz8_4w/viewform?embedded=true">
-      </iframe>
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe2L5zVSiviONFlpn-oTlx6btNImY0RdmpmnNIKPzjwgz8_4w/viewform?embedded=true"></iframe>
     </div>
-
   </div>
 </div>
 
@@ -177,39 +187,51 @@ const sheetURL = "https://opensheet.elk.sh/1svVkZIovuBEb_OjIj0fr0x1X2ZDyMJYUfJyD
 
 let data = [];
 
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("active");
+}
+
+function closeMenu() {
+  document.getElementById("sidebar").classList.remove("active");
+}
+
+/* CERRAR CON ESC */
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeMenu();
+});
+
 function parseFecha(fechaStr) {
   if (!fechaStr) return null;
   fechaStr = fechaStr.split(" ")[0];
 
   if (fechaStr.includes("/")) {
-    const partes = fechaStr.split("/");
-    const fecha = new Date(partes[2], partes[1]-1, partes[0]);
-    if (!isNaN(fecha)) return fecha;
+    const p = fechaStr.split("/");
+    return new Date(p[2], p[1]-1, p[0]);
   }
 
-  const fecha = new Date(fechaStr);
-  return isNaN(fecha) ? null : fecha;
+  const f = new Date(fechaStr);
+  return isNaN(f) ? null : f;
 }
 
-function formatoISO(fecha) {
-  return fecha ? fecha.toISOString().split("T")[0] : null;
+function formatoISO(f) {
+  return f ? f.toISOString().split("T")[0] : null;
 }
 
-function calcularVencimiento(fecha) {
-  if (!fecha) return null;
-  const f = new Date(fecha);
-  f.setDate(f.getDate() + 15);
-  return f;
+function calcularVencimiento(f) {
+  if (!f) return null;
+  const x = new Date(f);
+  x.setDate(x.getDate() + 15);
+  return x;
 }
 
 async function cargarDatos() {
   const res = await fetch(sheetURL);
   data = await res.json();
 
-  data = data.map(item => {
-    const fecha = parseFecha(item.FechaRegistro || item["Fecha de registro"] || item["Marca temporal"]);
+  data = data.map(i => {
+    const fecha = parseFecha(i.FechaRegistro || i["Fecha de registro"]);
     return {
-      ...item,
+      ...i,
       FechaRegistroISO: formatoISO(fecha),
       FechaVencimientoISO: formatoISO(calcularVencimiento(fecha))
     };
@@ -224,7 +246,7 @@ function mostrar(items) {
 
   cont.innerHTML = "";
 
-  if (!items || items.length === 0) {
+  if (!items.length) {
     inicio.style.display = "flex";
     return;
   }
@@ -233,35 +255,33 @@ function mostrar(items) {
 
   const hoy = new Date().toISOString().split("T")[0];
 
-  items.forEach(item => {
-    const vencido = item.FechaVencimientoISO && item.FechaVencimientoISO < hoy;
+  items.forEach(i => {
+    const vencido = i.FechaVencimientoISO && i.FechaVencimientoISO < hoy;
 
     cont.innerHTML += `
       <div class="card ${vencido ? 'vencido' : 'activo'}">
-        <b>${item.Descripcion || "-"}</b><br>
-        Tipo: ${item.Tipo || "-"}<br>
-        Fecha: ${item.FechaRegistroISO || "-"}<br>
-        Encontrado por: ${item.EncontradoPor || "-"}<br>
-        Vence: ${item.FechaVencimientoISO || "-"}
+        <b>${i.Descripcion || "-"}</b><br>
+        Tipo: ${i.Tipo || "-"}<br>
+        Fecha: ${i.FechaRegistroISO || "-"}<br>
+        Encontrado por: ${i.EncontradoPor || "-"}<br>
+        Vence: ${i.FechaVencimientoISO || "-"}
       </div>
     `;
   });
 }
 
 function buscar() {
-  const texto = document.getElementById("search").value.toLowerCase();
-  const fecha = document.getElementById("date").value;
+  const t = document.getElementById("search").value.toLowerCase();
+  const f = document.getElementById("date").value;
 
-  let filtrados = data.filter(item =>
-    (item.Descripcion || "").toLowerCase().includes(texto) ||
-    (item.Tipo || "").toLowerCase().includes(texto)
+  let r = data.filter(i =>
+    (i.Descripcion || "").toLowerCase().includes(t) ||
+    (i.Tipo || "").toLowerCase().includes(t)
   );
 
-  if (fecha) {
-    filtrados = filtrados.filter(item => item.FechaRegistroISO === fecha);
-  }
+  if (f) r = r.filter(i => i.FechaRegistroISO === f);
 
-  mostrar(filtrados);
+  mostrar(r);
 }
 
 function venceHoy() {
@@ -271,7 +291,7 @@ function venceHoy() {
 
 function vencidos() {
   const hoy = new Date().toISOString().split("T")[0];
-  mostrar(data.filter(i => i.FechaVencimientoISO && i.FechaVencimientoISO < hoy));
+  mostrar(data.filter(i => i.FechaVencimientoISO < hoy));
 }
 
 function limpiarFiltros() {
