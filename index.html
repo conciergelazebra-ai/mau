@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Lost & Found - La Zebra</title>
 
 <style>
+
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f7b24a;
@@ -13,41 +17,84 @@ body {
   color: #333;
 }
 
+/* FOCUS TECLADO */
+
+button:focus,
+input:focus,
+span:focus {
+  outline: 4px solid #111;
+  outline-offset: 3px;
+}
+
+/* TITULO */
+
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
 
 /* BOTÓN MENU */
+
 .menu-btn {
+
   position: fixed;
+
   right: 50px;
   top: 20px;
+
   background: #111;
   color: white;
+
   border: none;
+
   padding: 25px 18px;
+
   border-radius: 12px;
+
   cursor: pointer;
+
   z-index: 1001;
+
   font-size: 25px;
+
+  transition: opacity 0.2s ease;
+}
+
+/* BOTON OCULTO */
+
+.menu-btn.hidden {
+
+  opacity: 0;
+
+  pointer-events: none;
 }
 
 /* SIDEBAR */
+
 .sidebar {
+
   position: fixed;
+
   top: 0;
   right: -1000px;
+
   width: 600px;
   height: 100%;
+
   background: white;
+
   box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+
   padding: 20px;
+
   display: flex;
   flex-direction: column;
+
   gap: 10px;
+
   transition: right 0.35s ease;
-  z-index: 1000;
+
+  z-index: 2000;
 }
 
 .sidebar.active {
@@ -55,19 +102,29 @@ h1 {
 }
 
 .sidebar input {
+
   padding: 22px;
+
   border-radius: 10px;
+
   border: 1px solid #ddd;
+
   font-size: 28px;
 }
 
 .sidebar button {
+
   padding: 38px;
+
   border: none;
+
   border-radius: 10px;
+
   cursor: pointer;
+
   background: #111;
   color: white;
+
   font-size: 38px;
 }
 
@@ -77,73 +134,140 @@ h1 {
 .btn-add { background: #c8a97e; }
 
 /* CONTENIDO */
+
 .contenido {
   max-width: 900px;
   margin: auto;
 }
 
 /* INICIO */
+
 .inicio {
+
   height: 80vh;
+
   display: flex;
   flex-direction: column;
+
   justify-content: center;
   align-items: center;
+
   text-align: center;
-  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') center/cover;
+
+  background:
+  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')
+  center/cover;
+
   border-radius: 30px;
 }
 
 /* CARDS */
+
 .card {
+
   background: white;
+
   padding: 18px;
+
   margin: 10px auto;
+
   border-radius: 15px;
+
   max-width: 600px;
 }
 
-.vencido { border-left: 6px solid red; }
-.activo { border-left: 6px solid green; }
+.vencido {
+  border-left: 6px solid red;
+}
+
+.activo {
+  border-left: 6px solid green;
+}
 
 /* MODAL */
+
 .modal {
+
   display: none;
+
   position: fixed;
+
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
+
   background: rgba(0,0,0,0.6);
+
+  z-index: 3000;
 }
 
 .modal-content {
+
   background: white;
+
   width: 90%;
   max-width: 1200px;
+
   height: 90vh;
+
   margin: 20px auto;
+
   padding: 20px;
+
   border-radius: 15px;
+
   display: flex;
   flex-direction: column;
+
   overflow: hidden;
 }
 
-/* FORM FIX (IMPORTANTE) */
+/* FORM */
+
 .form-container {
+
   flex: 1;
+
   display: flex;
+
   min-height: 0;
 }
 
 .form-container iframe {
+
   width: 100%;
   height: 100%;
+
   border: none;
+
   flex: 1;
-  min-height: 0;
 }
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    width: 90%;
+  }
+
+  .sidebar button {
+    font-size: 24px;
+    padding: 24px;
+  }
+
+  .sidebar input {
+    font-size: 22px;
+  }
+
+  .menu-btn {
+    right: 20px;
+    top: 20px;
+  }
+}
+
 </style>
 </head>
 
@@ -152,26 +276,76 @@ h1 {
 <h1>Lost & Found La Zebra</h1>
 
 <!-- BOTÓN MENU -->
-<button class="menu-btn" onclick="toggleMenu()">MENÚ☰</button>
+
+<button
+  class="menu-btn"
+  onclick="toggleMenu()">
+
+  ☰ MENÚ
+
+</button>
 
 <!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-  <input type="text" id="search" placeholder="Buscar objeto">
-  <input type="date" id="date">
 
-  <button onclick="buscar(); closeMenu()">🔍 Buscar</button>
-  <button class="btn-warning" onclick="venceHoy(); closeMenu()">⏰ Vence hoy</button>
-  <button class="btn-danger" onclick="vencidos(); closeMenu()">⚠️ Vencidos</button>
-  <button class="btn-reset" onclick="limpiarFiltros(); closeMenu()">🧹 Limpiar</button>
-  <button class="btn-add" onclick="abrirModal(); closeMenu()">➕ Agregar</button>
+<div
+  id="sidebar"
+  class="sidebar">
+
+  <input
+    type="text"
+    id="search"
+    placeholder="Buscar objeto">
+
+  <input
+    type="date"
+    id="date">
+
+  <button onclick="buscar(); closeMenu()">
+    🔍 Buscar
+  </button>
+
+  <button
+    class="btn-warning"
+    onclick="venceHoy(); closeMenu()">
+
+    ⏰ Vence hoy
+  </button>
+
+  <button
+    class="btn-danger"
+    onclick="vencidos(); closeMenu()">
+
+    ⚠️ Vencidos
+  </button>
+
+  <button
+    class="btn-reset"
+    onclick="limpiarFiltros(); closeMenu()">
+
+    🧹 Limpiar
+  </button>
+
+  <button
+    class="btn-add"
+    onclick="abrirModal(); closeMenu()">
+
+    ➕ Agregar
+  </button>
+
 </div>
 
 <!-- CONTENIDO -->
+
 <div class="contenido">
 
   <div id="inicio" class="inicio">
+
     <h2>Lost & Found</h2>
-    <p>Presiona el menú para buscar objetos</p>
+
+    <p>
+      Presiona el menú para buscar objetos
+    </p>
+
   </div>
 
   <div id="resultados"></div>
@@ -179,144 +353,511 @@ h1 {
 </div>
 
 <!-- MODAL -->
+
 <div id="modal" class="modal">
+
   <div class="modal-content">
-    <span onclick="cerrarModal()" style="cursor:pointer;">✖</span>
+
+    <span
+      tabindex="0"
+      onclick="cerrarModal()"
+      style="
+      cursor:pointer;
+      font-size:30px;
+      ">
+
+      ✖
+
+    </span>
+
     <h2>Agregar objeto</h2>
 
     <div class="form-container">
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe2L5zVSiviONFlpn-oTlx6btNImY0RdmpmnNIKPzjwgz8_4w/viewform?embedded=true"></iframe>
+
+      <iframe
+        src="https://docs.google.com/forms/d/e/1FAIpQLSe2L5zVSiviONFlpn-oTlx6btNImY0RdmpmnNIKPzjwgz8_4w/viewform?embedded=true">
+      </iframe>
+
     </div>
+
   </div>
+
 </div>
 
 <script>
-const sheetURL = "https://opensheet.elk.sh/1svVkZIovuBEb_OjIj0fr0x1X2ZDyMJYUfJyD2bsiAOI/Respuestas de formulario 1";
+
+/* SHEET */
+
+const sheetURL =
+"https://opensheet.elk.sh/1svVkZIovuBEb_OjIj0fr0x1X2ZDyMJYUfJyD2bsiAOI/Respuestas de formulario 1";
 
 let data = [];
 
+/* MENU */
+
 function toggleMenu() {
-  document.getElementById("sidebar").classList.toggle("active");
+
+  const sidebar =
+    document.getElementById("sidebar");
+
+  const btn =
+    document.querySelector(".menu-btn");
+
+  sidebar.classList.toggle("active");
+
+  btn.classList.toggle("hidden");
+
+  if (sidebar.classList.contains("active")) {
+
+    document
+      .getElementById("search")
+      .focus();
+  }
 }
 
 function closeMenu() {
-  document.getElementById("sidebar").classList.remove("active");
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("active");
+
+  document
+    .querySelector(".menu-btn")
+    .classList.remove("hidden");
 }
 
-/* ESC */
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Escape") closeMenu();
-});
+/* CLICK FUERA DEL SIDEBAR */
 
-function parseFecha(fechaStr) {
-  if (!fechaStr) return null;
-  fechaStr = fechaStr.split(" ")[0];
+document.addEventListener("click", function(e) {
 
-  if (fechaStr.includes("/")) {
-    const p = fechaStr.split("/");
-    return new Date(p[2], p[1]-1, p[0]);
+  const sidebar =
+    document.getElementById("sidebar");
+
+  const menuBtn =
+    document.querySelector(".menu-btn");
+
+  const clickDentroSidebar =
+    sidebar.contains(e.target);
+
+  const clickEnBoton =
+    menuBtn.contains(e.target);
+
+  if (
+    sidebar.classList.contains("active")
+    &&
+    !clickDentroSidebar
+    &&
+    !clickEnBoton
+  ) {
+
+    closeMenu();
   }
 
-  const f = new Date(fechaStr);
-  return isNaN(f) ? null : f;
+});
+
+/* TECLADO */
+
+document.addEventListener("keydown", function(e) {
+
+  /* ESC */
+
+  if (e.key === "Escape") {
+
+    closeMenu();
+    cerrarModal();
+  }
+
+  /* ENTER */
+
+  if (e.key === "Enter") {
+
+    const modalAbierto =
+      document.getElementById("modal")
+      .style.display === "block";
+
+    if (!modalAbierto) {
+
+      buscar();
+
+      closeMenu();
+    }
+  }
+
+  /* CTRL + K */
+
+  if (e.ctrlKey && e.key.toLowerCase() === "k") {
+
+    e.preventDefault();
+
+    toggleMenu();
+
+    setTimeout(() => {
+
+      document
+        .getElementById("search")
+        .focus();
+
+    }, 100);
+  }
+
+  /* / PARA BUSCAR */
+
+  if (e.key === "/") {
+
+    e.preventDefault();
+
+    const sidebar =
+      document.getElementById("sidebar");
+
+    if (!sidebar.classList.contains("active")) {
+
+      toggleMenu();
+    }
+
+    setTimeout(() => {
+
+      document
+        .getElementById("search")
+        .focus();
+
+    }, 100);
+  }
+
+});
+
+/* FECHAS */
+
+function parseFecha(fechaStr) {
+
+  if (!fechaStr) return null;
+
+  fechaStr =
+    fechaStr.split(" ")[0];
+
+  if (fechaStr.includes("/")) {
+
+    const p =
+      fechaStr.split("/");
+
+    return new Date(
+      p[2],
+      p[1]-1,
+      p[0]
+    );
+  }
+
+  const f =
+    new Date(fechaStr);
+
+  return isNaN(f)
+    ? null
+    : f;
 }
 
 function formatoISO(f) {
-  return f ? f.toISOString().split("T")[0] : null;
+
+  return f
+    ? f.toISOString().split("T")[0]
+    : null;
 }
 
 function calcularVencimiento(f) {
+
   if (!f) return null;
+
   const x = new Date(f);
-  x.setDate(x.getDate() + 15);
+
+  x.setDate(
+    x.getDate() + 15
+  );
+
   return x;
 }
 
+/* CARGAR DATOS */
+
 async function cargarDatos() {
-  const res = await fetch(sheetURL);
-  data = await res.json();
+
+  const res =
+    await fetch(sheetURL);
+
+  data =
+    await res.json();
 
   data = data.map(i => {
-    const fecha = parseFecha(i.FechaRegistro || i["Fecha de registro"]);
+
+    const fecha =
+      parseFecha(
+        i.FechaRegistro ||
+        i["Fecha de registro"]
+      );
+
     return {
+
       ...i,
-      FechaRegistroISO: formatoISO(fecha),
-      FechaVencimientoISO: formatoISO(calcularVencimiento(fecha))
+
+      FechaRegistroISO:
+        formatoISO(fecha),
+
+      FechaVencimientoISO:
+        formatoISO(
+          calcularVencimiento(fecha)
+        )
     };
   });
 
   mostrar([]);
 }
 
+/* MOSTRAR */
+
 function mostrar(items) {
-  const cont = document.getElementById("resultados");
-  const inicio = document.getElementById("inicio");
+
+  const cont =
+    document.getElementById("resultados");
+
+  const inicio =
+    document.getElementById("inicio");
 
   cont.innerHTML = "";
 
   if (!items.length) {
+
     inicio.style.display = "flex";
+
     return;
   }
 
   inicio.style.display = "none";
 
-  const hoy = new Date().toISOString().split("T")[0];
+  const hoy =
+    new Date()
+    .toISOString()
+    .split("T")[0];
 
   items.forEach(i => {
-    const vencido = i.FechaVencimientoISO && i.FechaVencimientoISO < hoy;
+
+    const vencido =
+      i.FechaVencimientoISO &&
+      i.FechaVencimientoISO < hoy;
 
     cont.innerHTML += `
+
       <div class="card ${vencido ? 'vencido' : 'activo'}">
+
         <b>${i.Descripcion || "-"}</b><br>
-        Tipo: ${i.Tipo || "-"}<br>
-        Fecha: ${i.FechaRegistroISO || "-"}<br>
-        Encontrado por: ${i.EncontradoPor || "-"}<br>
-        Vence: ${i.FechaVencimientoISO || "-"}
+
+        Tipo:
+        ${i.Tipo || "-"}<br>
+
+        Fecha:
+        ${i.FechaRegistroISO || "-"}<br>
+
+        Encontrado por:
+        ${i.EncontradoPor || "-"}<br>
+
+        Vence:
+        ${i.FechaVencimientoISO || "-"}
+
       </div>
+
     `;
   });
 }
 
+/* BUSCAR */
+
 function buscar() {
-  const t = document.getElementById("search").value.toLowerCase();
-  const f = document.getElementById("date").value;
+
+  const t =
+    document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+  const f =
+    document
+    .getElementById("date")
+    .value;
 
   let r = data.filter(i =>
-    (i.Descripcion || "").toLowerCase().includes(t) ||
-    (i.Tipo || "").toLowerCase().includes(t)
+
+    (i.Descripcion || "")
+      .toLowerCase()
+      .includes(t)
+
+    ||
+
+    (i.Tipo || "")
+      .toLowerCase()
+      .includes(t)
   );
 
-  if (f) r = r.filter(i => i.FechaRegistroISO === f);
+  if (f) {
+
+    r = r.filter(i =>
+      i.FechaRegistroISO === f
+    );
+  }
+
+  const cont =
+    document.getElementById("resultados");
+
+  const inicio =
+    document.getElementById("inicio");
+
+  if (r.length === 0) {
+
+    inicio.style.display = "none";
+
+    let mensaje =
+    "No hay objetos registrados con esas características.";
+
+    if (f && !t) {
+
+      mensaje =
+      "No hay nada registrado en esa fecha.";
+    }
+
+    cont.innerHTML = `
+
+      <div class="card"
+      style="
+      text-align:center;
+      font-size:22px;
+      ">
+
+      ${mensaje}
+
+      </div>
+
+    `;
+
+    return;
+  }
 
   mostrar(r);
 }
 
+/* VENCE HOY */
+
 function venceHoy() {
-  const hoy = new Date().toISOString().split("T")[0];
-  mostrar(data.filter(i => i.FechaVencimientoISO === hoy));
+
+  const hoy =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const resultados =
+    data.filter(i =>
+      i.FechaVencimientoISO === hoy
+    );
+
+  const cont =
+    document.getElementById("resultados");
+
+  const inicio =
+    document.getElementById("inicio");
+
+  if (!resultados.length) {
+
+    inicio.style.display = "none";
+
+    cont.innerHTML = `
+
+      <div class="card"
+      style="
+      text-align:center;
+      font-size:22px;
+      ">
+
+      Hoy no hay objetos que reclamar.
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+  mostrar(resultados);
 }
+
+/* VENCIDOS */
 
 function vencidos() {
-  const hoy = new Date().toISOString().split("T")[0];
-  mostrar(data.filter(i => i.FechaVencimientoISO < hoy));
+
+  const hoy =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const resultados =
+    data.filter(i =>
+      i.FechaVencimientoISO < hoy
+    );
+
+  const cont =
+    document.getElementById("resultados");
+
+  const inicio =
+    document.getElementById("inicio");
+
+  if (!resultados.length) {
+
+    inicio.style.display = "none";
+
+    cont.innerHTML = `
+
+      <div class="card"
+      style="
+      text-align:center;
+      font-size:22px;
+      ">
+
+      No hay objetos vencidos.
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+  mostrar(resultados);
 }
 
+/* LIMPIAR */
+
 function limpiarFiltros() {
+
   document.getElementById("search").value = "";
+
   document.getElementById("date").value = "";
+
   mostrar([]);
 }
 
+/* MODAL */
+
 function abrirModal() {
-  document.getElementById("modal").style.display = "block";
+
+  document
+    .getElementById("modal")
+    .style.display = "block";
 }
 
 function cerrarModal() {
-  document.getElementById("modal").style.display = "none";
+
+  document
+    .getElementById("modal")
+    .style.display = "none";
 }
 
+/* INICIAR */
+
 cargarDatos();
+
 </script>
 
 </body>
